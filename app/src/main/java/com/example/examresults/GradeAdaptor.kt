@@ -1,6 +1,7 @@
 package com.example.examresults
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +29,9 @@ class GradeAdaptor(private val mContext: Context, private val gradeList: List<Gr
         holder.score2.text = grade.score2.toString()
 
         holder.card.setOnClickListener {
-
+            val intent = Intent(mContext, DetailActivity::class.java)
+            intent.putExtra("grade", grade)
+            mContext.startActivity(intent)
         }
     }
 
