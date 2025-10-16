@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var scoreList: ArrayList<Grade>
     private lateinit var adaptor: GradeAdaptor
+    private lateinit var dbHelper: DBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,18 +29,29 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.toolbar.title = "Exam Results"
-        binding.toolbar.subtitle = "Average: 50%"
         setSupportActionBar(binding.toolbar)
 
         binding.rv.setHasFixedSize(true)
         binding.rv.layoutManager = LinearLayoutManager(this)
 
         scoreList = ArrayList()
-        scoreList.add(Grade(1, "Math", 50, 100))
-        scoreList.add(Grade(2, "English", 60, 90))
-        scoreList.add(Grade(3, "Physics", 50, 60))
-        scoreList.add(Grade(4, "Chemistry", 30, 40))
-        scoreList.add(Grade(5, "Biology", 40, 45))
+
+//        scoreList.add(Grade(1, "Math", 50, 100))
+//        scoreList.add(Grade(2, "English", 60, 90))
+//        scoreList.add(Grade(3, "Physics", 50, 60))
+//        scoreList.add(Grade(4, "Chemistry", 30, 40))
+//        scoreList.add(Grade(5, "Biology", 40, 45))
+
+        dbHelper = DBHelper(this)
+        scoreList = GradeDao().getAllGrades(dbHelper)
+
+        var totalScore = 0
+        var count = 0
+        for (grade in scoreList) {
+            totalScore += (grade.score1 + grade.score2) / 2
+            count++
+        }
+        binding.toolbar.subtitle = "Average: ${totalScore / count}%"
 
         adaptor = GradeAdaptor(this, scoreList)
         binding.rv.adapter = adaptor

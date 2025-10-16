@@ -30,7 +30,7 @@ class GradeDao {
         db.close()
     }
 
-    fun getAllGrades(dbHelper: DBHelper): List<Grade> {
+    fun getAllGrades(dbHelper: DBHelper): ArrayList<Grade> {
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM scores", null)
         val gradeList = ArrayList<Grade>()
