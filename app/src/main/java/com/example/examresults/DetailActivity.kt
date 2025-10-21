@@ -2,6 +2,7 @@ package com.example.examresults
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,8 @@ import com.google.android.material.snackbar.Snackbar
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
+    private lateinit var score: Grade
+    private lateinit var dbHelper: DBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +32,12 @@ class DetailActivity : AppCompatActivity() {
         binding.toolbarDetail.title = "Detail"
         setSupportActionBar(binding.toolbarDetail)
 
-        val grade = intent.getSerializableExtra("grade") as Grade
-        binding.editTextLessonDetail.setText(grade.name)
-        binding.editTextScore1Detail.setText(grade.score1.toString())
-        binding.editTextScore2Detail.setText(grade.score2.toString())
+        dbHelper = DBHelper(this)
+
+        score = intent.getSerializableExtra("grade") as Grade
+        binding.editTextLessonDetail.setText(score.name)
+        binding.editTextScore1Detail.setText(score.score1.toString())
+        binding.editTextScore2Detail.setText(score.score2.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -45,6 +50,7 @@ class DetailActivity : AppCompatActivity() {
             R.id.action_delete -> {
                 Snackbar.make(binding.toolbarDetail, "Are you sure?", Snackbar.LENGTH_SHORT)
                     .setAction("Yes") {
+                        GradeDao().deleteGrade(dbHelper, score.id)
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     }
@@ -54,7 +60,26 @@ class DetailActivity : AppCompatActivity() {
             }
 
             R.id.action_edit -> {
-                startActivity(Intent(this, SaveNoteActivity::class.java))
+
+
+                val name = binding.editTextLessonDetail.text.toString().trim()
+                val score1 = binding.editTextScore1Detail.text.toString()
+                val score2 = binding.editTextScore2Detail.text.toString()
+
+                if (TextUtils.isEmpty(name)) {
+                    Snackbar.make(binding.toolbarDetail, "Lesson name cannot be empty", Snackbar.LENGTH_SHORT).show()
+                    return false
+                } else if (TextUtils.isEmpty(score1) || score1.toInt() < 0 || score1.toInt() > 100) {
+                    Snackbar.make(binding.toolbarDetail, "Note 1 must be between 0 and 100", Snackbar.LENGTH_SHORT).show()
+                    return false
+                } else if (TextUtils.isEmpty(score2) || score2.toInt() < 0 || score2.toInt() > 100) {
+                    Snackbar.make(binding.toolbarDetail, "Note 2 must be between 0 and 100", Snackbar.LENGTH_SHORT).show()
+                    return false
+                }
+
+                GradeDao().updateGrade(dbHelper, score.id, name, score1.toInt(), score2.toInt())
+
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
                 return true
             }

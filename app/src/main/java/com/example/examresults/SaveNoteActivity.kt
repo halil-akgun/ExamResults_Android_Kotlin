@@ -3,12 +3,12 @@ package com.example.examresults
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.examresults.databinding.ActivitySaveNoteBinding
+import com.google.android.material.snackbar.Snackbar
 
 class SaveNoteActivity : AppCompatActivity() {
 
@@ -34,21 +34,21 @@ class SaveNoteActivity : AppCompatActivity() {
         binding.buttonSaveNote.setOnClickListener {
 
             val name = binding.editTextLesson.text.toString().trim()
-            val score1 = binding.editTextNote1.text.toString().toInt()
-            val score2 = binding.editTextNote2.text.toString().toInt()
+            val score1 = binding.editTextNote1.text.toString()
+            val score2 = binding.editTextNote2.text.toString()
 
             if (TextUtils.isEmpty(name)) {
-                Toast.makeText(this, "Lesson name cannot be empty", Toast.LENGTH_SHORT).show()
+                Snackbar.make(binding.main, "Lesson name cannot be empty", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (score1 < 0 || score1 > 100) {
-                Toast.makeText(this, "Note 1 must be between 0 and 100", Toast.LENGTH_SHORT).show()
+            } else if (TextUtils.isEmpty(score1)) {
+                Snackbar.make(binding.main, "Note 1 must be between 0 and 100", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (score2 < 0 || score2 > 100) {
-                Toast.makeText(this, "Note 2 must be between 0 and 100", Toast.LENGTH_SHORT).show()
+            } else if (TextUtils.isEmpty(score2)) {
+                Snackbar.make(binding.main, "Note 2 must be between 0 and 100", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            GradeDao().addGrade(dbHelper, name, score1, score2)
+            GradeDao().addGrade(dbHelper, name, score1.toInt(), score2.toInt())
 
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

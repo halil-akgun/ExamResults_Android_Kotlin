@@ -51,7 +51,10 @@ class MainActivity : AppCompatActivity() {
             totalScore += (grade.score1 + grade.score2) / 2
             count++
         }
-        binding.toolbar.subtitle = "Average: ${totalScore / count}%"
+
+        if (totalScore != 0) {
+            binding.toolbar.subtitle = "Average: ${totalScore / count}%"
+        }
 
         adaptor = GradeAdaptor(this, scoreList)
         binding.rv.adapter = adaptor
